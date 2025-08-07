@@ -1,10 +1,15 @@
-   {% if error_message %}
-       <p>{{ error_message }}</p>
-   {% else %}
-       <p>Содержание рабочей папки: </p>
-       <ul>
-           {% for file in files %}
-               <li>{{ file }}</li>
-           {% endfor %}
-       </ul>
-   {% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Домашняя страница</title>
+</head>
+<body>
+    <h1>Содержание рабочей папки:</h1>
+    <ul>
+        {% for file in files %}
+            <li>{{ file }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

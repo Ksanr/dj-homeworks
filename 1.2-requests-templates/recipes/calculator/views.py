@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 
 DATA = {
     'omlet': {
@@ -28,3 +28,38 @@ DATA = {
 #     'ингредиент2': количество2,
 #   }
 # }
+
+def home_view(request):
+    template_name = 'calculator/home.html'
+    pages = {
+        'Главная страница': reverse('home'),
+        'Омлет': reverse('omlet'),
+        'Паста': reverse('pasta'),
+        'Бутерброд': reverse('buter'),
+    }
+
+    context = {
+        'pages': pages
+    }
+    return render(request, template_name, context)
+
+def omlet_view(request):
+    count = request.GET.get('servings', 1)
+    context = {'recipe': {}}
+    for key, item in DATA['omlet'].items():
+        context['recipe'][key] = item * int(count)
+    return render(request, 'calculator/index.html', context)
+
+def pasta_view(request):
+    count = request.GET.get('servings', 1)
+    context = {'recipe': {}}
+    for key, item in DATA['pasta'].items():
+        context['recipe'][key] = item * int(count)
+    return render(request, 'calculator/index.html', context)
+
+def buter_view(request):
+    count = request.GET.get('servings', 1)
+    context = {'recipe': {}}
+    for key, item in DATA['buter'].items():
+        context['recipe'][key] = item * int(count)
+    return render(request, 'calculator/index.html', context)
