@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Каталог книг{% endblock %}
+{% block title %}Книги за выбранную дату{% endblock %}
 {% block content %}
     <div class="container">
         <div class="header">
@@ -19,4 +19,15 @@
             {% endfor %}
         </div>
     </div>
+<!-- Пагинация -->
+<br><br><br><br>
+<p>
+    {% if prev_day_books %}
+        <a href="{% url 'by_date' prev_day_books %}">&lt {{ prev_day_books|date:"Y-m-d" }}</a>
+    {% endif %}
+
+    {% if next_day_books %}
+        <a href="{% url 'by_date' next_day_books %}">{{ next_day_books|date:"Y-m-d" }} &gt</a>
+    {% endif %}
+</p>
 {% endblock %}
