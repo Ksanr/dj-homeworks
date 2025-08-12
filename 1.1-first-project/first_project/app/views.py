@@ -34,5 +34,9 @@ def workdir_view(request):
     # по аналогии с `time_view`, напишите код,
     # который возвращает список файлов в рабочей 
     # директории
+    """file_list = '\n'.join(listdir('.'))
+    msg = f'Список файлов в рабочей директории:\n {file_list}'
+    return HttpResponse(msg)
+"""
     msg = listdir(path='.')
     return render(request, 'app/my_template.html', {'files': msg})

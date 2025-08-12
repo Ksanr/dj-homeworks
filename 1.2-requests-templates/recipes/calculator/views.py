@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, reverse
 
 DATA = {
@@ -43,23 +44,16 @@ def home_view(request):
     }
     return render(request, template_name, context)
 
-def omlet_view(request):
-    count = request.GET.get('servings', 1)
-    context = {'recipe': {}}
-    for key, item in DATA['omlet'].items():
-        context['recipe'][key] = item * int(count)
-    return render(request, 'calculator/index.html', context)
+def calc_ingredients(recipe: str, person: int):
+    return {key: value * person for key, value in DATA[recipe].items()}
 
-def pasta_view(request):
-    count = request.GET.get('servings', 1)
-    context = {'recipe': {}}
-    for key, item in DATA['pasta'].items():
-        context['recipe'][key] = item * int(count)
-    return render(request, 'calculator/index.html', context)
+def recipe_view(request, rec):
+    count = int(request.GET.get('servings', 1))
+    if rec in DATA:
+        recipe = calc_ingredients(rec, count)
+    else:
+        return HttpResponse('Такого рецепта нет в базе данных')
 
-def buter_view(request):
-    count = request.GET.get('servings', 1)
-    context = {'recipe': {}}
-    for key, item in DATA['buter'].items():
-        context['recipe'][key] = item * int(count)
+    context = {'recipe': recipe}
+
     return render(request, 'calculator/index.html', context)

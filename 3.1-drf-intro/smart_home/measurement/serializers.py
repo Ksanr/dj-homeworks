@@ -8,6 +8,8 @@ class MeasurementSerializer(serializers.ModelSerializer):
         model = Measurement
         fields = ['temperature', 'created_at']
 
+
+
 class SensorListSerializer(serializers.ModelSerializer):
     # Используется для вывода краткого списка датчиков
     class Meta:
