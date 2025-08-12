@@ -30,6 +30,7 @@ DATA = {
 #   }
 # }
 
+
 def home_view(request):
     template_name = 'calculator/home.html'
     pages = {
@@ -48,12 +49,21 @@ def calc_ingredients(recipe: str, person: int):
     return {key: value * person for key, value in DATA[recipe].items()}
 
 def recipe_view(request, rec):
+
     count = int(request.GET.get('servings', 1))
     if rec in DATA:
         recipe = calc_ingredients(rec, count)
     else:
         return HttpResponse('Такого рецепта нет в базе данных')
-
-    context = {'recipe': recipe}
+    pages = {
+        'Главная страница': reverse('home'),
+        'Омлет': reverse('omlet'),
+        'Паста': reverse('pasta'),
+        'Бутерброд': reverse('buter'),
+    }
+    context = {
+        'recipe': recipe,
+        'pages': pages
+    }
 
     return render(request, 'calculator/index.html', context)
