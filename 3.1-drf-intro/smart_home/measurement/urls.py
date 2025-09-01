@@ -1,9 +1,13 @@
-from django.urls import path
-from measurement.views import SensorListCreate, SensorRetrieveUpdateDestroy, MeasurementCreate
+from rest_framework import routers
+from django.urls import path, include
+from measurement.views import SensorList, Measurements, SensorDetailList
+
+router = routers.DefaultRouter()
+router.register(r'sensors', SensorList)
+router.register(r'measurements', Measurements)
 
 urlpatterns = [
     # TODO: зарегистрируйте необходимые маршруты
-    path('sensors/', SensorListCreate.as_view()),
-    path('sensors/<int:pk>/', SensorRetrieveUpdateDestroy.as_view()),
-    path('measurements/', MeasurementCreate.as_view()),
+    # path(r'sensors/<pk: int>/', SensorDetailList.as_view({'get': 'list'})),
+    path('', include(router.urls)),
 ]

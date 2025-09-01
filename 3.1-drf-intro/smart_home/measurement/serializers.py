@@ -14,7 +14,7 @@ class SensorListSerializer(serializers.ModelSerializer):
     # Используется для вывода краткого списка датчиков
     class Meta:
         model = Sensor
-        fields = ["id", "name", "description"]
+        fields = '__all__'
 
 class SensorDetailSerializer(serializers.ModelSerializer):
     # Полная информация по датчику включает также связанные измерения
