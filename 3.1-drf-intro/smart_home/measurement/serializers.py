@@ -6,7 +6,7 @@ class MeasurementSerializer(serializers.ModelSerializer):
     # Этот сериализатор используется для отображения отдельных записей измерений
     class Meta:
         model = Measurement
-        fields = ['temperature', 'created_at']
+        fields = ['temperature', 'created_at', 'photo']
 
 
 
