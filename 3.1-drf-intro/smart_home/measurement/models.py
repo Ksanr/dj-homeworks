@@ -12,5 +12,8 @@ class Sensor(models.Model):
 class Measurement(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, related_name="measurements")
     temperature = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Температура')
-    created_at = models.DateTimeField(verbose_name='Дата и время измерения', auto_now_add=True)
-    photo = models.ImageField(verbose_name='Фото', null=True)
+    update_datetime = models.DateTimeField(verbose_name='Дата и время измерения', auto_now=True)
+    photo = models.ImageField(verbose_name='Фото', null=True, blank=True)
+
+    def __str__(self):
+        return f'Температура {self.temperature}°C в {self.sensor.name}'

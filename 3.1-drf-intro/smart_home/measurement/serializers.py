@@ -6,15 +6,15 @@ class MeasurementSerializer(serializers.ModelSerializer):
     # Этот сериализатор используется для отображения отдельных записей измерений
     class Meta:
         model = Measurement
-        fields = ['temperature', 'created_at', 'photo']
+        fields = ['temperature', 'update_datetime', 'sensor', 'photo']
 
 
 
-class SensorListSerializer(serializers.ModelSerializer):
+class SensorSerializer(serializers.ModelSerializer):
     # Используется для вывода краткого списка датчиков
     class Meta:
         model = Sensor
-        fields = '__all__'
+        fields = ['id', 'name', 'description']
 
 class SensorDetailSerializer(serializers.ModelSerializer):
     # Полная информация по датчику включает также связанные измерения
