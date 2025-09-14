@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from advertisements.models import Advertisement
+from .models import Advertisement, FavouriteAdvertisement
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,11 +19,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     creator = UserSerializer(
         read_only=True,
     )
+    is_favourite = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+                  'status', 'created_at', 'is_favourite')
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -44,6 +45,29 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         open_ads_count = Advertisement.objects.filter(creator=user, status='OPEN').count()
 
         if open_ads_count >= 10:
-            raise serializers.ValidationError("Вы достигли лимита открытых объявлений.")
+            raise serializers.ValidationError('Вы достигли лимита открытых объявлений.')
 
         return data
+
+    def get_is_favourite(self, obj):
+        user = self.context.get('request').user
+        return bool(obj.favourites.filter(user=user))
+
+class FavouriteAdvertisementSerializer(serializers.ModelSerializer):
+    """
+    Serializer для избранных объявлений.
+    """
+    class Meta:
+        model = FavouriteAdvertisement
+        fields = '__all__'
+        read_only_fields = ['user']  # Поле user устанавливается автоматически
+
+    def validate(self, attrs):
+        """
+        Валидируем, что пользователь не добавляет свое собственное объявление в избранное.
+        """
+        request_user = self.context.get('request').user
+        advertisement_creator = attrs['advertisement'].creator
+        if request_user == advertisement_creator:
+            raise serializers.ValidationError("Нельзя добавить своё объявление в избранное")
+        return attrs

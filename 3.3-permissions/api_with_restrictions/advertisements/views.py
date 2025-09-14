@@ -4,9 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from .filters import AdvertisementFilter
-from .models import Advertisement
+from .models import Advertisement, FavouriteAdvertisement
 from .permissions import IsOwnerOrAdminOrReadOnly
-from .serializers import AdvertisementSerializer
+from .serializers import AdvertisementSerializer, FavouriteAdvertisementSerializer
 
 
 class AdvertisementViewSet(ModelViewSet):
@@ -29,3 +29,13 @@ class AdvertisementViewSet(ModelViewSet):
         if self.action in ["update", "partial_update", "destroy"]:
             return [IsOwnerOrAdminOrReadOnly()]
         return []
+
+class FavouriteAdvertisementsViewSet(ModelViewSet):
+    serializer_class = FavouriteAdvertisementSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FavouriteAdvertisement.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
