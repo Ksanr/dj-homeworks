@@ -51,6 +51,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def get_is_favourite(self, obj):
         user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
         return bool(obj.favourites.filter(user=user))
 
 class FavouriteAdvertisementSerializer(serializers.ModelSerializer):
