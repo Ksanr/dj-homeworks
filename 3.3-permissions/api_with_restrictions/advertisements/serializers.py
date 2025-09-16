@@ -1,5 +1,8 @@
+from logging import exception
+
 from django.contrib.auth.models import User
-from rest_framework import serializers
+from django.template.context_processors import request
+from rest_framework import serializers, exceptions
 
 from .models import Advertisement, FavouriteAdvertisement
 
@@ -16,9 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 class AdvertisementSerializer(serializers.ModelSerializer):
     """Serializer для объявления."""
 
-    creator = UserSerializer(
-        read_only=True,
-    )
+    creator = UserSerializer(read_only=True)
     is_favourite = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -42,6 +43,11 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
         user = self.context['request'].user
+        new_status = data.get('status', None)
+
+        if new_status in ('CLOSED', 'DRAFT'):
+            return data
+
         open_ads_count = Advertisement.objects.filter(creator=user, status='OPEN').count()
 
         if open_ads_count >= 10:
@@ -54,6 +60,19 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return bool(obj.favourites.filter(user=user))
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.status == 'DRAFT' and instance.creator != request.user:
+            del representation['title']
+            del representation['description']
+            del representation['status']
+            del representation['created_at']
+            return {}
+            # raise exceptions.PermissionDenied(detail="Доступ запрещён.")
+        return representation
+
 
 class FavouriteAdvertisementSerializer(serializers.ModelSerializer):
     """

@@ -31,6 +31,16 @@ class AdvertisementViewSet(ModelViewSet):
             return [IsOwnerOrAdminOrReadOnly()]
         return []
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        current_user = self.request.user
+
+        visible_statuses = ['OPEN', 'CLOSED']
+        if not current_user.is_anonymous:
+            visible_statuses.append('DRAFT')
+        return queryset.filter(status__in=visible_statuses)
+
+
 class FavouriteAdvertisementsViewSet(ModelViewSet):
     serializer_class = FavouriteAdvertisementSerializer
     permission_classes = [IsAuthenticated]
