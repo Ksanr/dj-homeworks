@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -18,3 +19,11 @@ class Course(models.Model):
         Student,
         blank=True,
     )
+
+    def add_student(self, student):
+        if self.students.count() >= getattr(settings, 'MAX_STUDENTS_PER_COURSE'):
+            raise ValueError('Достигнут максимальный предел студентов на курсе')
+        self.students.add(student)
+
+    def __str__(self):
+        return f'Course({self.id}, {self.name}, {self.students})'
