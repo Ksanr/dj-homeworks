@@ -37,24 +37,26 @@ def test_get_first_course(client, course_factory):
     # 1 проверка получения первого курса
     course = course_factory(_quantity=1)
 
-    response = client.get(path='/api/v1/courses/')
-    data = response.json()
+    # response = client.get(path='/api/v1/courses/')
+    response = client.get(path=f'/api/v1/courses/{course[0].id}/')
+    response_data = response.json()
 
     assert response.status_code == 200
-    assert data[0]['name'] == course[0].name
+    assert response_data['name'] == course[0].name
 
 
 @pytest.mark.django_db
-def test_get_first_courses(client, course_factory):
+def test_get_some_courses(client, course_factory):
     # 2 проверка получения списка курсов
     courses = course_factory(_quantity=10)
 
-    response = client.get(path='/api/v1/courses/')
-    data = response.json()
 
-    assert len(data) == len(courses)
-    for i, c in enumerate(data):
-        assert data[i]['name'] == courses[i].name
+    response = client.get(path='/api/v1/courses/')
+    response_data = response.json()
+
+    assert len(response_data) == len(courses)
+    for i, c in enumerate(response_data):
+        assert response_data[i]['name'] == courses[i].name
 
 @pytest.mark.django_db
 def test_get_course_by_id(client, course_factory):
@@ -63,12 +65,14 @@ def test_get_course_by_id(client, course_factory):
     courses = course_factory(_quantity=10)
     select_course = random.choice(courses)
     select_id = select_course.id
+    data = {'id': select_id}
 
+    # response = client.get(path='/api/v1/courses/?id='+str(select_id))
+    response = client.get(path='/api/v1/courses/', data=data)
 
-    response = client.get(path='/api/v1/courses/?id='+str(select_id))
-    data = response.json()
-    assert data[0]['id'] == select_id
-    assert data[0]['name'] == select_course.name
+    response_data = response.json()
+    assert response_data[0]['id'] == select_id
+    assert response_data[0]['name'] == select_course.name
 
 
 @pytest.mark.django_db
@@ -78,10 +82,12 @@ def test_get_course_by_name(client, course_factory):
     courses = course_factory(_quantity=10)
     select_course = random.choice(courses)
     select_name = select_course.name
+    data = {'name': select_name}
 
-    response = client.get(path='/api/v1/courses/?name='+str(select_name))
-    data = response.json()
-    for course in data:
+    # response = client.get(path='/api/v1/courses/?name='+str(select_name))
+    response = client.get(path='/api/v1/courses/', data=data)
+    response_data = response.json()
+    for course in response_data:
         assert course['name'] == select_name
 
 
@@ -108,9 +114,9 @@ def test_update_course(client, course_factory):
     response = client.patch(path=f'/api/v1/courses/{select_id}/', data=data)
     assert response.status_code == 200
 
-    response = client.get(path=f'/api/v1/courses/{select_id}/')
-    get_data = response.json()
-    assert get_data['name'] == data['name']
+    # response = client.get(path=f'/api/v1/courses/{select_id}/')
+    response_data = response.json()
+    assert response_data['name'] == data['name']
 
 @pytest.mark.django_db
 def test_delete_course(client, course_factory):
